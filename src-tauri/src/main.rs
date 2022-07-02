@@ -3,7 +3,7 @@
     windows_subsystem = "windows"
 )]
 
-use tauri::{api, Manager};
+use tauri::Manager;
 
 fn main() {
     let context = tauri::generate_context!();
@@ -14,10 +14,11 @@ fn main() {
             tauri::Menu::default()
         })
         .setup(|app| {
+            let url = String::from("https://doc.rust-lang.org/book/");
             app.windows()
                 .get("main")
                 .unwrap()
-                .eval("window.location.replace('https://doc.rust-lang.org/book/')")
+                .eval(format!("window.location.replace('{}')", url).as_str())
                 .unwrap();
             Ok(())
         })
