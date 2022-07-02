@@ -1,0 +1,14 @@
+{
+  "name": "the-book-app",
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "npm run tauri dev",
+    "bundle": "tauri build"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^1.0.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.0.2"
+  }
+}
