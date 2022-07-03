@@ -3,7 +3,10 @@
     windows_subsystem = "windows"
 )]
 
-use std::{fs::File, io::Write};
+use std::{
+    fs::File,
+    io::{Read, Write},
+};
 
 use tauri::{Manager, Menu};
 
@@ -17,7 +20,22 @@ fn main() {
             Menu::default()
         })
         .setup(|app| {
-            let url = String::from("https://doc.rust-lang.org/book/");
+            let app_dir = app.path_resolver().app_dir().unwrap();
+
+            let mut file = match File::open(app_dir.join("state.txt")) {
+                Ok(file) => file,
+                Err(_) => File::create(app_dir.join("state.txt")).unwrap(),
+            };
+
+            let mut contents = String::new();
+            file.read_to_string(&mut contents)?;
+
+            let url = String::from(if contents.is_empty() {
+                "https://doc.rust-lang.org/book/"
+            } else {
+                &contents
+            });
+
             app.windows()
                 .get("main")
                 .unwrap()
@@ -28,9 +46,9 @@ fn main() {
         .on_page_load(|window, payload| {
             let app_dir = window.app_handle().path_resolver().app_dir().unwrap();
 
-            let mut file = File::create(format!("{}state.txt", app_dir.to_str().unwrap())).unwrap();
+            let mut file = File::create(app_dir.join("state.txt")).unwrap();
             match file.write_all(format!("{}", payload.url()).as_bytes()) {
-                Ok(()) => println!("url saved"),
+                Ok(()) => (),
                 Err(err) => println!("error: {}", &err.to_string()),
             }
         })
