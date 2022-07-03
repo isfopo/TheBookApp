@@ -56,10 +56,10 @@
     "windows": [
       {
         "fullscreen": false,
-        "height": 600,
+        "height": 800,
         "resizable": true,
         "title": "The Book",
-        "width": 800
+        "width": 1000
       }
     ]
   }
