@@ -4,7 +4,7 @@
 )]
 
 use std::{
-    fs::File,
+    fs::{self, File, OpenOptions},
     io::{Read, Write},
 };
 
@@ -22,19 +22,30 @@ fn main() {
         .setup(|app| {
             let app_dir = app.path_resolver().app_dir().unwrap();
 
-            let mut file = match File::open(app_dir.join("state.txt")) {
+            let mut file = match OpenOptions::new()
+                .read(true)
+                .write(true)
+                .create(true)
+                .open(app_dir.join("state.txt"))
+            {
                 Ok(file) => file,
-                Err(_) => File::create(app_dir.join("state.txt")).unwrap(),
+                Err(_) => {
+                    fs::create_dir_all(app_dir.clone()).unwrap();
+                    let mut new_file = File::create(app_dir.join("state.txt")).unwrap();
+
+                    match new_file.write_all(b"https://doc.rust-lang.org/book/") {
+                        Ok(()) => (),
+                        Err(err) => println!("error: {}", &err.to_string()),
+                    };
+
+                    new_file
+                }
             };
 
             let mut contents = String::new();
             file.read_to_string(&mut contents)?;
 
-            let url = String::from(if contents.is_empty() {
-                "https://doc.rust-lang.org/book/"
-            } else {
-                &contents
-            });
+            let url = String::from(&contents);
 
             app.windows()
                 .get("main")
