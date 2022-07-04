@@ -10,6 +10,8 @@ use std::{
 
 use tauri::{Manager, Menu};
 
+const URL: &[u8] = b"https://doc.rust-lang.org/book/";
+
 fn main() {
     let context = tauri::generate_context!();
 
@@ -33,7 +35,7 @@ fn main() {
                     fs::create_dir_all(app_dir.clone()).unwrap();
                     let mut new_file = File::create(app_dir.join("state.txt")).unwrap();
 
-                    match new_file.write_all(b"https://doc.rust-lang.org/book/") {
+                    match new_file.write_all(URL) {
                         Ok(()) => (),
                         Err(err) => println!("error: {}", &err.to_string()),
                     };
